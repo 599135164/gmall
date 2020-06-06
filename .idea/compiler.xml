@@ -7,11 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="gmall-bean" />
+        <module name="gmall-common-util" />
         <module name="gmall-interface" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="gmall-bean" target="1.8" />
+      <module name="gmall-common-util" target="1.8" />
       <module name="gmall-interface" target="1.8" />
       <module name="gmall-parent" target="1.8" />
     </bytecodeTargetLevel>
