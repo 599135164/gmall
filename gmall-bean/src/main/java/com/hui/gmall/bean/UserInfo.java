@@ -4,13 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * @author shenhui
  * @version 1.0
  * @date 2020/6/6 23:17
  */
-public class UserInfo {
+public class UserInfo implements Serializable {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
