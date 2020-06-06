@@ -13,6 +13,7 @@
         <module>../gmall-common-util</module>
         <module>../gmall-service-util</module>
         <module>../gmall-web-util</module>
+        <module>../gmall-user-manage</module>
     </modules>
     <packaging>pom</packaging>
     <!--定义jar版本-->
