@@ -1,5 +1,6 @@
 package com.hui.gmall.order.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.hui.gmall.bean.UserAddress;
 import com.hui.gmall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,8 @@ import java.util.List;
  */
 @Controller
 public class OrderController {
-    @Autowired
-    UserService userService;
-
+    @Reference
+    private UserService userService;
 //    @RequestMapping("trade")
 //    public String trade(){
 //        //返回一个视图名称叫index，html
@@ -27,7 +27,7 @@ public class OrderController {
 //    }
     @RequestMapping("trade")
     @ResponseBody
-    public List<UserAddress> trade(String userId){
+    public List<UserAddress> trade(String userId) {
         //返回一个视图名称叫index，html
         return userService.getUserAddressList(userId);
     }

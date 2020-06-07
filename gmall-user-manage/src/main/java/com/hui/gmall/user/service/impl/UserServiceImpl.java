@@ -1,12 +1,13 @@
 package com.hui.gmall.user.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.hui.gmall.bean.UserAddress;
 import com.hui.gmall.bean.UserInfo;
 import com.hui.gmall.service.UserService;
 import com.hui.gmall.user.mapper.UserAddressMapper;
 import com.hui.gmall.user.mapper.UserInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
