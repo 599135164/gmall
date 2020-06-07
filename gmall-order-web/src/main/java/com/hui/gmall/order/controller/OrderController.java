@@ -1,7 +1,13 @@
 package com.hui.gmall.order.controller;
 
+import com.hui.gmall.bean.UserAddress;
+import com.hui.gmall.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 
 /**
@@ -11,9 +17,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 public class OrderController {
+    @Autowired
+    UserService userService;
+
+//    @RequestMapping("trade")
+//    public String trade(){
+//        //返回一个视图名称叫index，html
+//        return "index";
+//    }
     @RequestMapping("trade")
-    public String trade(){
+    @ResponseBody
+    public List<UserAddress> trade(String userId){
         //返回一个视图名称叫index，html
-        return "index";
+        return userService.getUserAddressList(userId);
     }
 }

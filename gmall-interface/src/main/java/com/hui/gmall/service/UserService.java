@@ -1,5 +1,6 @@
 package com.hui.gmall.service;
 
+import com.hui.gmall.bean.UserAddress;
 import com.hui.gmall.bean.UserInfo;
 
 import java.util.List;
@@ -11,8 +12,16 @@ import java.util.List;
  */
 public interface UserService {
     /**
-     * 查询所有数据
+     * 查询所有用户信息数据
      * @return
      */
     List<UserInfo> findAll();
+
+    /**
+     * 根据用户id查询用户地址列表
+     * @param userId
+     * @return
+     */
+    List<UserAddress> getUserAddressList(String userId);
+
 }
