@@ -1,5 +1,8 @@
 package com.hui.gmall.manage.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.hui.gmall.bean.BaseCatalog1;
+import com.hui.gmall.service.ManageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,9 +16,11 @@ import java.util.List;
  */
 @Controller
 public class ManageController {
-//    @RequestMapping("getCatalog1")
-//    @ResponseBody
-//    public List<> getCatalog(){
-//        return "";
-//    }
+    @Reference
+    private ManageService manageService;
+    @RequestMapping("getCatalog1")
+    @ResponseBody
+    public List<BaseCatalog1> getCatalog(){
+        return manageService.getCatalog1();
+    }
 }
