@@ -61,9 +61,15 @@ public class ManageServiceImpl implements ManageService {
     @Override
     @Transactional
     public void saveAttrInfo(BaseAttrInfo baseAttrInfo) {
-        //需要事物
+        //修改操作
+        if (null != baseAttrInfo.getId() || baseAttrInfo.getId().length() > 0)
+            baseAttrInfoMapper.updateByPrimaryKeySelective(baseAttrInfo);
+        else baseAttrInfoMapper.insertSelective(baseAttrInfo);
+        BaseAttrValue baseAttrValueDel = new BaseAttrValue();
+        baseAttrValueDel.setAttrId(baseAttrInfo.getId());
+        baseAttrValueMapper.delete(baseAttrValueDel);
+        //需要事务
         //保存BaseAttrInfo
-        baseAttrInfoMapper.insertSelective(baseAttrInfo);
         //保存BaseAttrValue
         List<BaseAttrValue> baseAttrValueList = baseAttrInfo.getAttrValueList();
         if (null != baseAttrValueList && baseAttrValueList.size() > 0) {
@@ -73,4 +79,13 @@ public class ManageServiceImpl implements ManageService {
             }
         } else throw new RuntimeException("AttrValueList集合值为空!");
     }
+
+    @Override
+    public List<BaseAttrValue> getAttrValueList(String attrId) {
+        BaseAttrValue baseAttrValue = new BaseAttrValue();
+        baseAttrValue.setAttrId(attrId);
+        return baseAttrValueMapper.select(baseAttrValue);
+    }
+
+
 }

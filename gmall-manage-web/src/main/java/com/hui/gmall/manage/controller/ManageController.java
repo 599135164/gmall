@@ -1,10 +1,7 @@
 package com.hui.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.hui.gmall.bean.BaseAttrInfo;
-import com.hui.gmall.bean.BaseCatalog1;
-import com.hui.gmall.bean.BaseCatalog2;
-import com.hui.gmall.bean.BaseCatalog3;
+import com.hui.gmall.bean.*;
 import com.hui.gmall.service.ManageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -54,6 +51,11 @@ public class ManageController {
     @ResponseBody
     public void saveAttrInfo(@RequestBody BaseAttrInfo baseAttrInfo){
          manageService.saveAttrInfo(baseAttrInfo);
+    }
+    @RequestMapping("getAttrValueList")
+    @ResponseBody
+    public List<BaseAttrValue>getAttrValueList(String attrId){
+       return manageService.getAttrValueList(attrId);
     }
 
 }

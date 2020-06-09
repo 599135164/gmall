@@ -1,9 +1,6 @@
 package com.hui.gmall.service;
 
-import com.hui.gmall.bean.BaseAttrInfo;
-import com.hui.gmall.bean.BaseCatalog1;
-import com.hui.gmall.bean.BaseCatalog2;
-import com.hui.gmall.bean.BaseCatalog3;
+import com.hui.gmall.bean.*;
 
 import java.util.List;
 
@@ -45,4 +42,11 @@ public interface ManageService {
      * @param baseAttrInfo
      */
     void saveAttrInfo(BaseAttrInfo baseAttrInfo);
+
+    /**
+     * 根据 BaseAttrValue.attrId 获取 属性值 AttrValueList 集合
+     * @param attrId
+     * @return
+     */
+    List<BaseAttrValue> getAttrValueList(String attrId);
 }
