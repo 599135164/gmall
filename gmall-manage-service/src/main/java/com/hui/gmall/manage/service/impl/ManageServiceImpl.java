@@ -1,16 +1,11 @@
 package com.hui.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.hui.gmall.bean.BaseAttrInfo;
-import com.hui.gmall.bean.BaseCatalog1;
-import com.hui.gmall.bean.BaseCatalog2;
-import com.hui.gmall.bean.BaseCatalog3;
-import com.hui.gmall.manage.mapper.BaseAttrInfoMapper;
-import com.hui.gmall.manage.mapper.BaseCatalog1Mapper;
-import com.hui.gmall.manage.mapper.BaseCatalog2Mapper;
-import com.hui.gmall.manage.mapper.BaseCatalog3Mapper;
+import com.hui.gmall.bean.*;
+import com.hui.gmall.manage.mapper.*;
 import com.hui.gmall.service.ManageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,6 +28,9 @@ public class ManageServiceImpl implements ManageService {
 
     @Autowired
     private BaseAttrInfoMapper baseAttrInfoMapper;
+
+    @Autowired
+    private BaseAttrValueMapper baseAttrValueMapper;
 
     @Override
     public List<BaseCatalog1> getCatalog1() {
@@ -58,5 +56,21 @@ public class ManageServiceImpl implements ManageService {
         BaseAttrInfo baseAttrInfo = new BaseAttrInfo();
         baseAttrInfo.setCatalog3Id(catalog3Id);
         return baseAttrInfoMapper.select(baseAttrInfo);
+    }
+
+    @Override
+    @Transactional
+    public void saveAttrInfo(BaseAttrInfo baseAttrInfo) {
+        //需要事物
+        //保存BaseAttrInfo
+        baseAttrInfoMapper.insertSelective(baseAttrInfo);
+        //保存BaseAttrValue
+        List<BaseAttrValue> baseAttrValueList = baseAttrInfo.getAttrValueList();
+        if (null != baseAttrValueList && baseAttrValueList.size() > 0) {
+            for (BaseAttrValue baseAttrValue : baseAttrValueList) {
+                baseAttrValue.setAttrId(baseAttrInfo.getId());
+                baseAttrValueMapper.insertSelective(baseAttrValue);
+            }
+        } else throw new RuntimeException("AttrValueList集合值为空!");
     }
 }

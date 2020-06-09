@@ -40,4 +40,9 @@ public interface ManageService {
      */
      List<BaseAttrInfo> getAttrList(String catalog3Id);
 
+    /**
+     * 保存平台属性数据
+     * @param baseAttrInfo
+     */
+    void saveAttrInfo(BaseAttrInfo baseAttrInfo);
 }
