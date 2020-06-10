@@ -49,4 +49,11 @@ public interface ManageService {
      * @return
      */
     List<BaseAttrValue> getAttrValueList(String attrId);
+
+    /**
+     * 根据 spuInfo 对象属性获取 SpuInfo 集合
+     * @param spuInfo
+     * @return
+     */
+    List<SpuInfo> getSpuList(SpuInfo spuInfo);
 }

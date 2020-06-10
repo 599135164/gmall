@@ -1,7 +1,8 @@
 # gmall
+
 尚硅谷谷粒商城练习
 
-### 项目架构图
+#### 项目架构图
 
 ![架构图](https://github.com/599135164/gmall/blob/master/main.png)
 
@@ -18,4 +19,50 @@
 | 订单服务 | 负责确认订单是否付款成功，并对接仓储物流系统。 |
 | 仓储物流 | 独立的管理系统，负责商品的库存。               |
 | 后台管理 | 主要维护类目、商品、库存单元、广告位等信息。   |
+
+#### SpringCloud与Dubbo的区别？
+
+解决分布式的问题：
+
+​	微服务：springboot + springcloud + mybatis + mybatis-plus + redis + mysql + es + nginx + activemq + 		mycat/sharding JDBC + docker + k8s/jenkins
+
+服务治理 + 服务调用 dubbo
+
+数据传输方式：
+
+​	dubbo：二进制方式
+
+​	spring cloud：HTTP
+
+数据访问方式：
+
+​	dubbo：		   rpc
+
+​	spring cloud：Restful API
+
+功能方面：
+
+​	dubbo：服务的治理和调用
+
+​	spring cloud  众多组件 与 spring source
+
+本质来讲：
+
+​	dubbo：jar包
+
+​	spring cloud：spring source中的一员
+
+开发角度：
+
+​	dubbo：停止更新5年！依赖dubbo version！
+
+​	spring cloud：一直更新维护。
+
+分布式角度：
+
+​	dubbo：传输数据方式优于spring cloud！
+
+
+
+
 
