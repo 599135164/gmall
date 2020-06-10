@@ -52,10 +52,15 @@ public class ManageController {
     public void saveAttrInfo(@RequestBody BaseAttrInfo baseAttrInfo){
          manageService.saveAttrInfo(baseAttrInfo);
     }
+
     @RequestMapping("getAttrValueList")
     @ResponseBody
     public List<BaseAttrValue>getAttrValueList(String attrId){
        return manageService.getAttrValueList(attrId);
     }
-
+    @RequestMapping("baseSaleAttrList")
+    @ResponseBody
+    public List<BaseSaleAttr> baseSaleAttrList(){
+        return manageService.getBaseSaleAttrList();
+    }
 }

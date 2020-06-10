@@ -56,4 +56,23 @@ public interface ManageService {
      * @return
      */
     List<SpuInfo> getSpuList(SpuInfo spuInfo);
+
+    /**
+     * 获取所有销售属性数据
+     * @return
+     */
+    List<BaseSaleAttr> getBaseSaleAttrList();
+
+    /**
+     *保存 spu 信息
+     * @param spuInfo
+     */
+     void saveSpuInfo(SpuInfo spuInfo);
+
+    /**
+     * 根据spuId来获取 spu的图片集合
+     * @param spuId
+     * @return
+     */
+    List<SpuImage> getSpuImageList(String spuId);
 }

@@ -25,11 +25,11 @@ import java.io.IOException;
 @CrossOrigin
 public class FileController {
     private Logger logger= LoggerFactory.getLogger(FileController.class);
-    @Value("$fileServer.url")
+    @Value("${fileServer.url}")
     private String fileUrl;       //fileUrl=http://192.168.255.128
 
     @RequestMapping("fileUpload")
-    public String fileUpload(MultipartFile file) throws Exception {
+    public String fileUpload(MultipartFile file) throws IOException, MyException {
         String imgUrl=fileUrl;
         if(null!=file) {
             String configFile = this.getClass().getResource("/tracker.conf").getFile();
@@ -43,14 +43,13 @@ public class FileController {
             //获取文件后缀名
             String extName = StringUtils.substringAfterLast(originalFilename, ".");
             //上传图片
-            String[] upload_file = storageClient.upload_file(originalFilename.getBytes(), extName, null);
+            String[] upload_file = storageClient.upload_file(file.getBytes(), extName, null);
             for (int i = 0; i < upload_file.length; i++) {
                 String path = upload_file[i];
                 imgUrl+="/"+path;
             }
             logger.info("在fastDFS中插入图片，路径为"+imgUrl);
-            return imgUrl;
         }
-        throw new Exception("未获取到图片文件");
+        return imgUrl;
     }
 }

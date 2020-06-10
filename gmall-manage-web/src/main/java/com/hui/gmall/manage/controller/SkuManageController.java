@@ -1,11 +1,9 @@
 package com.hui.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.hui.gmall.bean.SpuInfo;
+import com.hui.gmall.bean.SpuImage;
 import com.hui.gmall.service.ManageService;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,21 +12,17 @@ import java.util.List;
 /**
  * @author shenhui
  * @version 1.0
- * @date 2020/6/9 16:53
+ * @date 2020/6/11 0:13
  */
 @RestController
 @CrossOrigin
-public class SpuManageController {
+public class SkuManageController {
     @Reference
     private ManageService manageService;
 
-    @RequestMapping("spuList")
-    public List<SpuInfo> spuList(SpuInfo spuInfo) {
-        return manageService.getSpuList(spuInfo);
+    @RequestMapping("spuImageList")
+    public List<SpuImage> spuImageList(String spuId){
+        return   manageService.getSpuImageList(spuId);
     }
 
-    @RequestMapping("saveSpuInfo")
-    public void saveSpuInfo(@RequestBody SpuInfo spuInfo) {
-        manageService.saveSpuInfo(spuInfo);
-    }
 }

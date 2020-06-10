@@ -24,7 +24,7 @@ public class GmallManageWebApplicationTests {
         //获取连接
         TrackerServer trackerServer=trackerClient.getTrackerServer();
         StorageClient storageClient=new StorageClient(trackerServer,null);
-        String orginalFilename="e://123.jpg";
+        String orginalFilename="e://黑背.jpg";
         //上传图片
         String[] upload_file = storageClient.upload_file(orginalFilename, "jpg", null);
         for (int i = 0; i < upload_file.length; i++) {
