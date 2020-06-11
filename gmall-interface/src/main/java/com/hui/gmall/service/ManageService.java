@@ -88,4 +88,18 @@ public interface ManageService {
      * @param skuInfo
      */
     void saveSkuInfo(SkuInfo skuInfo);
+
+    /**
+     * 根据 skuId 查询 skuInfo
+     * @param skuId
+     * @return
+     */
+    SkuInfo getSkuInfo(String skuId);
+
+    /**
+     * 根据 skuId 查询 skuImage 集合
+     * @param skuId
+     * @return
+     */
+    List<SkuImage> getSkuImageBySkuId(String skuId);
 }

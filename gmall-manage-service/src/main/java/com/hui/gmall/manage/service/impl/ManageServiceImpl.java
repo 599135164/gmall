@@ -236,4 +236,16 @@ public class ManageServiceImpl implements ManageService {
         }
     }
 
+    @Override
+    public SkuInfo getSkuInfo(String skuId) {
+        return skuInfoMapper.selectByPrimaryKey(skuId);
+    }
+
+    @Override
+    public List<SkuImage> getSkuImageBySkuId(String skuId) {
+        SkuImage skuImage = new SkuImage();
+        skuImage.setSkuId(skuId);
+        return skuImageMapper.select(skuImage);
+    }
+
 }
