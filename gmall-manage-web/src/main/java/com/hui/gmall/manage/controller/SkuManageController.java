@@ -2,6 +2,8 @@ package com.hui.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.hui.gmall.bean.SpuImage;
+import com.hui.gmall.bean.SpuInfo;
+import com.hui.gmall.bean.SpuSaleAttr;
 import com.hui.gmall.service.ManageService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,4 +27,8 @@ public class SkuManageController {
         return   manageService.getSpuImageList(spuId);
     }
 
+    @RequestMapping("spuSaleAttrList")
+    public List<SpuSaleAttr> spuSaleAttrList(String spuId){
+        return manageService.getSpuSaleAttrList(spuId);
+    }
 }

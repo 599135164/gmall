@@ -75,4 +75,6 @@ public interface ManageService {
      * @return
      */
     List<SpuImage> getSpuImageList(String spuId);
+
+    List<SpuSaleAttr> getSpuSaleAttrList(String spuId);
 }

@@ -153,5 +153,10 @@ public class ManageServiceImpl implements ManageService {
         return spuImageMapper.select(spuImage);
     }
 
+    @Override
+    public List<SpuSaleAttr> getSpuSaleAttrList(String spuId) {
+        return spuSaleAttrMapper.selectSpuSaleAttrList(spuId);
+    }
+
 
 }
