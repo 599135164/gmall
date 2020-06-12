@@ -102,4 +102,11 @@ public interface ManageService {
      * @return
      */
     List<SkuImage> getSkuImageBySkuId(String skuId);
+
+    /**
+     * 根据 skuId ，spuId 查询销售属性集合
+     * @param skuInfo
+     * @return
+     */
+    List<SpuSaleAttr> getSpuSaleAttrListCheckBySku(SkuInfo skuInfo);
 }

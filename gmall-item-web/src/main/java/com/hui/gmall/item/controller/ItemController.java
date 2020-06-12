@@ -3,6 +3,7 @@ package com.hui.gmall.item.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.hui.gmall.bean.SkuImage;
 import com.hui.gmall.bean.SkuInfo;
+import com.hui.gmall.bean.SpuSaleAttr;
 import com.hui.gmall.service.ManageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,9 +28,12 @@ public class ItemController {
         //根据skuId获取数据
         SkuInfo skuInfo = manageService.getSkuInfo(skuId);
         //显示图片列表
-       List<SkuImage> skuImageList= manageService.getSkuImageBySkuId(skuId);
-       request.setAttribute("skuImageList",skuImageList);
+        List<SkuImage> skuImageList = manageService.getSkuImageBySkuId(skuId);
+        request.setAttribute("skuImageList", skuImageList);
+        //查询销售属性和销售属性值集合
+        List<SpuSaleAttr> spuSaleAttrList = manageService.getSpuSaleAttrListCheckBySku(skuInfo);
         //保存到作用域
+        request.setAttribute("spuSaleAttrList",spuSaleAttrList);
         request.setAttribute("skuInfo", skuInfo);
         return "item";
     }

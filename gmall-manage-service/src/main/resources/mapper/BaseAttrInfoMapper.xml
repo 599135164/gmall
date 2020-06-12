@@ -8,17 +8,17 @@
         </collection>
     </resultMap>
     <select id="selectBaseAttrInfoListByCatalog3Id" resultMap="baseAttrInfoMap">
-     SELECT
-   bai.id,
-   bai.attr_name,
-   bai.catalog3_id,
-   bav.id attr_value_id,
-   bav.value_name,
-   bav.attr_id
-FROM
-   base_attr_info bai
-INNER JOIN base_attr_value bav ON bai.id = bav.attr_id
-WHERE
-   catalog3_id = #{0}
+        SELECT
+           bai.id,
+           bai.attr_name,
+           bai.catalog3_id,
+           bav.id attr_value_id,
+           bav.value_name,
+           bav.attr_id
+        FROM
+           base_attr_info bai
+        INNER JOIN base_attr_value bav ON bai.id = bav.attr_id
+        WHERE
+           catalog3_id = #{0}
     </select>
 </mapper>

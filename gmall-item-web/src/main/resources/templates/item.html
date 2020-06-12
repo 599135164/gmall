@@ -218,32 +218,33 @@
 
                 <div class="box-attr-3">
                     <br/>
-                    <div class="box-attr-2 clear">
+                    <div class="box-attr-2 clear" th:each="spuSaleAttr:${spuSaleAttrList}">
                         <dl>
-                            <dt>选择颜色</dt>
-                            <dd class="redborder">
-                                <div>
+                            <dt th:text="${spuSaleAttr.saleAttrName}">选择颜色</dt>
+                            <dd th:class="${spuSaleAttrValue.isChecked}==1?'redborder':''"
+                                th:each="spuSaleAttrValue:${spuSaleAttr.spuSaleAttrValueList}">
+                                <div th:text="${spuSaleAttrValue.saleAttrValueName}">
                                     摩卡金
                                 </div>
                             </dd>
-                            <dd class="">
-                                <div>
-                                    太空银
-                                </div>
-                            </dd>
+                            <!--                            <dd class="">-->
+                            <!--                                <div>-->
+                            <!--                                    太空银-->
+                            <!--                                </div>-->
+                            <!--                            </dd>-->
                         </dl>
                     </div>
-                    <div class="box-attr-2 clear">
-                        <dl>
-                            <dt>选择版本</dt>
-                            <dd>
-                                <a href="#">标准版</a>
-                            </dd>
-                            <dd>
-                                <a href="#">套装版</a>
-                            </dd>
-                        </dl>
-                    </div>
+                    <!--                    <div class="box-attr-2 clear">-->
+                    <!--                        <dl>-->
+                    <!--                            <dt>选择版本</dt>-->
+                    <!--                            <dd>-->
+                    <!--                                <a href="#">标准版</a>-->
+                    <!--                            </dd>-->
+                    <!--                            <dd>-->
+                    <!--                                <a href="#">套装版</a>-->
+                    <!--                            </dd>-->
+                    <!--                        </dl>-->
+                    <!--                    </div>-->
                     <!--
                                                 <div class="box-attr-2 clear">
                                                     <dl>

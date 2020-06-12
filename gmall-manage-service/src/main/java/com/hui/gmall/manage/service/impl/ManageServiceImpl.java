@@ -248,4 +248,9 @@ public class ManageServiceImpl implements ManageService {
         return skuImageMapper.select(skuImage);
     }
 
+    @Override
+    public List<SpuSaleAttr> getSpuSaleAttrListCheckBySku(SkuInfo skuInfo) {
+        return spuSaleAttrMapper.selectSpuSaleAttrListCheckBySku(skuInfo.getId(),skuInfo.getSpuId());
+    }
+
 }
