@@ -218,12 +218,16 @@
 
                 <div class="box-attr-3">
                     <br/>
+<!--                    隐藏域-->
+                    <input id="valuesSku" type="hidden"  th:value= " ${valuesSkuJson}"  />
+                    <input id="skuId" type="hidden"  th:value= " ${skuInfo.id}"  />
+
                     <div class="box-attr-2 clear" th:each="spuSaleAttr:${spuSaleAttrList}">
                         <dl>
                             <dt th:text="${spuSaleAttr.saleAttrName}">选择颜色</dt>
                             <dd th:class="${spuSaleAttrValue.isChecked}==1?'redborder':''"
                                 th:each="spuSaleAttrValue:${spuSaleAttr.spuSaleAttrValueList}">
-                                <div th:text="${spuSaleAttrValue.saleAttrValueName}">
+                                <div th:value="${spuSaleAttrValue.id}" th:text="${spuSaleAttrValue.saleAttrValueName}">
                                     摩卡金
                                 </div>
                             </dd>
