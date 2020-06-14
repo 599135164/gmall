@@ -1,11 +1,17 @@
 package com.hui.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.hui.gmall.bean.*;
+import com.hui.gmall.config.RedisUtil;
+import com.hui.gmall.manage.constant.ManageConst;
 import com.hui.gmall.manage.mapper.*;
 import com.hui.gmall.service.ManageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.Jedis;
 
 import java.util.List;
 
@@ -16,6 +22,8 @@ import java.util.List;
  */
 @Service
 public class ManageServiceImpl implements ManageService {
+
+    private Logger logger= LoggerFactory.getLogger(ManageServiceImpl.class);
 
     @Autowired
     private BaseCatalog1Mapper baseCatalog1Mapper;
@@ -58,6 +66,9 @@ public class ManageServiceImpl implements ManageService {
 
     @Autowired
     private SkuAttrValueMapper skuAttrValueMapper;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public List<BaseCatalog1> getCatalog1() {
@@ -238,6 +249,24 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public SkuInfo getSkuInfo(String skuId) {
+        Jedis jedis = null;
+        try {
+            jedis = redisUtil.getJedis();
+            String skuKey = ManageConst.SKUKEY_PREFIX + skuId + ManageConst.SKUKEY_SUFFIX;
+            if (jedis.exists(skuKey)) {
+                String skuJson = jedis.get(skuKey);
+                return JSON.parseObject(skuJson, SkuInfo.class);
+            } else {
+                SkuInfo skuInfoDB = skuInfoMapper.selectByPrimaryKey(skuId);
+                //放入Redis并设置过期时间
+                jedis.setex(skuKey, ManageConst.SKUKEY_TIMEOUT, JSON.toJSONString(skuInfoDB));
+                return skuInfoDB;
+            }
+        } catch (Exception e) {
+            logger.error("Redis 服务异常！");
+        } finally {
+            if (null != jedis) jedis.close();
+        }
         return skuInfoMapper.selectByPrimaryKey(skuId);
     }
 
@@ -250,7 +279,7 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public List<SpuSaleAttr> getSpuSaleAttrListCheckBySku(SkuInfo skuInfo) {
-        return spuSaleAttrMapper.selectSpuSaleAttrListCheckBySku(skuInfo.getId(),skuInfo.getSpuId());
+        return spuSaleAttrMapper.selectSpuSaleAttrListCheckBySku(skuInfo.getId(), skuInfo.getSpuId());
     }
 
     @Override
