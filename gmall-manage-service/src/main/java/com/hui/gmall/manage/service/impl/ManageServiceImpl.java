@@ -254,13 +254,30 @@ public class ManageServiceImpl implements ManageService {
             jedis = redisUtil.getJedis();
             String skuKey = ManageConst.SKUKEY_PREFIX + skuId + ManageConst.SKUKEY_SUFFIX;
             if (jedis.exists(skuKey)) {
+                //命中缓存
                 String skuJson = jedis.get(skuKey);
                 return JSON.parseObject(skuJson, SkuInfo.class);
             } else {
-                SkuInfo skuInfoDB = skuInfoMapper.selectByPrimaryKey(skuId);
-                //放入Redis并设置过期时间
-                jedis.setex(skuKey, ManageConst.SKUKEY_TIMEOUT, JSON.toJSONString(skuInfoDB));
-                return skuInfoDB;
+                //未命中缓存
+                //使用 NX PX 来完成Redis分布式锁
+                String skuLockKey=ManageConst.SKUKEY_PREFIX+skuId+ManageConst.SKULOCK_SUFFIX;
+                String lockKey=jedis.set(skuLockKey,"lock","NX","PX",ManageConst.SKULOCK_EXPIRE_PX);
+                if ("OK".equals(lockKey)){
+                    //上锁成功                            这是一个幸运的线程  ♪（＾∀＾●）
+                    //获取DB数据返回
+                    SkuInfo skuInfoDB = skuInfoMapper.selectByPrimaryKey(skuId);
+                    //放入Redis并设置过期时间
+                    jedis.setex(skuKey, ManageConst.SKUKEY_TIMEOUT, JSON.toJSONString(skuInfoDB));
+                    //删除锁
+                    jedis.del(skuLockKey);
+                    return skuInfoDB;
+                }else {
+                    //已被其他线程上锁
+                    //等待
+                    Thread.sleep(1000);
+                    //自旋
+                    return getSkuInfo(skuId);
+                }
             }
         } catch (Exception e) {
             logger.error("Redis 服务异常！");
