@@ -1,6 +1,8 @@
 com\hui\gmall\bean\SkuInfo.class
+com\hui\gmall\bean\SkuLsInfo.class
 com\hui\gmall\bean\UserAddress.class
 com\hui\gmall\bean\BaseAttrValue.class
+com\hui\gmall\bean\SkuLsAttrValue.class
 com\hui\gmall\bean\UserInfo.class
 com\hui\gmall\bean\BaseCatalog1.class
 com\hui\gmall\bean\SpuImage.class

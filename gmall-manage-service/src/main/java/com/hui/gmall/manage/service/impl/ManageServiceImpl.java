@@ -266,6 +266,10 @@ public class ManageServiceImpl implements ManageService {
                     //上锁成功                            这是一个幸运的线程  ♪（＾∀＾●）
                     //获取DB数据返回
                     SkuInfo skuInfoDB = skuInfoMapper.selectByPrimaryKey(skuId);
+                    skuInfoDB.setSkuImageList(getSkuImageBySkuId(skuId));
+                    SkuAttrValue skuAttrValue = new SkuAttrValue();
+                    skuAttrValue.setSkuId(skuId);
+                    skuInfoDB.setSkuAttrValueList(skuAttrValueMapper.select(skuAttrValue));
                     //放入Redis并设置过期时间
                     jedis.setex(skuKey, ManageConst.SKUKEY_TIMEOUT, JSON.toJSONString(skuInfoDB));
                     //删除锁
