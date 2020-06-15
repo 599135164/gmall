@@ -23,7 +23,7 @@ import java.util.List;
 @Service
 public class ManageServiceImpl implements ManageService {
 
-    private Logger logger= LoggerFactory.getLogger(ManageServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(ManageServiceImpl.class);
 
     @Autowired
     private BaseCatalog1Mapper baseCatalog1Mapper;
@@ -260,9 +260,9 @@ public class ManageServiceImpl implements ManageService {
             } else {
                 //未命中缓存
                 //使用 NX PX 来完成Redis分布式锁
-                String skuLockKey=ManageConst.SKUKEY_PREFIX+skuId+ManageConst.SKULOCK_SUFFIX;
-                String lockKey=jedis.set(skuLockKey,"lock","NX","PX",ManageConst.SKULOCK_EXPIRE_PX);
-                if ("OK".equals(lockKey)){
+                String skuLockKey = ManageConst.SKUKEY_PREFIX + skuId + ManageConst.SKULOCK_SUFFIX;
+                String lockKey = jedis.set(skuLockKey, "lock", "NX", "PX", ManageConst.SKULOCK_EXPIRE_PX);
+                if ("OK".equals(lockKey)) {
                     //上锁成功                            这是一个幸运的线程  ♪（＾∀＾●）
                     //获取DB数据返回
                     SkuInfo skuInfoDB = skuInfoMapper.selectByPrimaryKey(skuId);
@@ -271,7 +271,7 @@ public class ManageServiceImpl implements ManageService {
                     //删除锁
                     jedis.del(skuLockKey);
                     return skuInfoDB;
-                }else {
+                } else {
                     //已被其他线程上锁
                     //等待
                     Thread.sleep(1000);
@@ -286,6 +286,7 @@ public class ManageServiceImpl implements ManageService {
         }
         return skuInfoMapper.selectByPrimaryKey(skuId);
     }
+
 
     @Override
     public List<SkuImage> getSkuImageBySkuId(String skuId) {
