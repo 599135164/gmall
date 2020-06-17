@@ -3,6 +3,7 @@ com\hui\gmall\bean\SkuLsInfo.class
 com\hui\gmall\bean\UserAddress.class
 com\hui\gmall\bean\BaseAttrValue.class
 com\hui\gmall\bean\SkuLsAttrValue.class
+com\hui\gmall\bean\SkuLsResult.class
 com\hui\gmall\bean\UserInfo.class
 com\hui\gmall\bean\BaseCatalog1.class
 com\hui\gmall\bean\SpuImage.class
@@ -11,6 +12,7 @@ com\hui\gmall\bean\SkuImage.class
 com\hui\gmall\bean\BaseSaleAttr.class
 com\hui\gmall\bean\BaseCatalog3.class
 com\hui\gmall\bean\BaseCatalog2.class
+com\hui\gmall\bean\SkuLsParams.class
 com\hui\gmall\bean\SpuInfo.class
 com\hui\gmall\bean\SkuAttrValue.class
 com\hui\gmall\bean\SkuSaleAttrValue.class
