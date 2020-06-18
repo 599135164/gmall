@@ -21,4 +21,10 @@ public interface ListService {
      * @return
      */
     SkuLsResult search(SkuLsParams skuLsParams);
+
+    /**
+     * 依据 skuId 增加商品热度
+     * @param skuId
+     */
+    public void incrHotScore(String skuId);
 }

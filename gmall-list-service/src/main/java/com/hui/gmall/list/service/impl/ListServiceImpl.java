@@ -4,11 +4,13 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.hui.gmall.bean.SkuLsInfo;
 import com.hui.gmall.bean.SkuLsParams;
 import com.hui.gmall.bean.SkuLsResult;
+import com.hui.gmall.config.RedisUtil;
 import com.hui.gmall.service.ListService;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
+import io.searchbox.core.Update;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -21,6 +23,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,9 +40,14 @@ public class ListServiceImpl implements ListService {
     @Autowired
     private JestClient jestClient;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     public static final String ES_INDEX = "gmall";
 
     public static final String ES_TYPE = "SkuInfo";
+
+    private static final int ES_HOT_SCORE_RENEW = 10;
 
     @Override
     public void saveSkuLsInfo(SkuLsInfo skuLsInfo) {
@@ -69,6 +77,32 @@ public class ListServiceImpl implements ListService {
         }
 
         return makeResultForSearch(skuLsParams, searchResult);
+
+    }
+
+    @Override
+    public void incrHotScore(String skuId) {
+        Jedis jedis = redisUtil.getJedis();
+        //定义 key
+        String key = "hotScore";
+        Double hotScore = jedis.zincrby("hotScore", 1, "skuId:" + skuId);
+        //按照一定的规则来更新es
+        if (hotScore % ES_HOT_SCORE_RENEW == 0) updateHotScore(skuId, Math.round(hotScore));
+    }
+
+    private void updateHotScore(String skuId, long hotScore) {
+        String updateJson = "{\n" +
+                "   \"doc\":{\n" +
+                "     \"hotScore\":" + hotScore + "\n" +
+                "   }\n" +
+                "}";
+
+        Update update = new Update.Builder(updateJson).index("gmall").type("SkuInfo").id(skuId).build();
+        try {
+            jestClient.execute(update);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -116,7 +150,7 @@ public class ListServiceImpl implements ListService {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
-        if (skuLsParams.getKeyword() != null && skuLsParams.getKeyword().length()>0) {
+        if (skuLsParams.getKeyword() != null && skuLsParams.getKeyword().length() > 0) {
             MatchQueryBuilder ma = new MatchQueryBuilder("skuName", skuLsParams.getKeyword());
             boolQueryBuilder.must(ma);
             // 设置高亮
@@ -130,7 +164,7 @@ public class ListServiceImpl implements ListService {
 
         }
         // 设置三级分类
-        if (skuLsParams.getCatalog3Id() != null && skuLsParams.getCatalog3Id().length()>0) {
+        if (skuLsParams.getCatalog3Id() != null && skuLsParams.getCatalog3Id().length() > 0) {
             TermQueryBuilder termQueryBuilder = new TermQueryBuilder("catalog3Id", skuLsParams.getCatalog3Id());
             boolQueryBuilder.filter(termQueryBuilder);
         }

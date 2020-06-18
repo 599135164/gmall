@@ -6,6 +6,7 @@ import com.hui.gmall.bean.SkuImage;
 import com.hui.gmall.bean.SkuInfo;
 import com.hui.gmall.bean.SkuSaleAttrValue;
 import com.hui.gmall.bean.SpuSaleAttr;
+import com.hui.gmall.service.ListService;
 import com.hui.gmall.service.ManageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,9 @@ public class ItemController {
 
     @Reference
     private ManageService manageService;
+
+    @Reference
+    private ListService listService;
 
     @RequestMapping("{skuId}.html")
     public String skuInfoPage(@PathVariable(value = "skuId") String skuId, HttpServletRequest request) {
@@ -56,6 +60,7 @@ public class ItemController {
         request.setAttribute("valuesSkuJson", valuesSkuJson);
         request.setAttribute("spuSaleAttrList", spuSaleAttrList);
         request.setAttribute("skuInfo", skuInfo);
+        listService.incrHotScore(skuId);
         return "item";
     }
 
