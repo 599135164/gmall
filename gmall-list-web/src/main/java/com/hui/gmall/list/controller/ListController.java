@@ -44,20 +44,22 @@ public class ListController {
         ArrayList<BaseAttrValue> baseAttrValueArrayList = new ArrayList<>();
 
         //使用迭代器 这里的逻辑有点复杂，难！
-        for (Iterator<BaseAttrInfo> attrInfoIterator = baseAttrInfoList.iterator(); attrInfoIterator.hasNext(); ) {
-            BaseAttrInfo baseAttrInfo = attrInfoIterator.next();
-            List<BaseAttrValue> attrValueList = baseAttrInfo.getAttrValueList();
-            for (BaseAttrValue baseAttrValue : attrValueList) {
-                if (null != skuLsParams.getValueId() && skuLsParams.getValueId().length > 0) {
-                    for (String valueId : skuLsParams.getValueId()) {
-                        if (valueId.equals(baseAttrValue.getId())) {
-                            attrInfoIterator.remove();
-                            BaseAttrValue baseAttrValueed = new BaseAttrValue();
-                            baseAttrValueed.setValueName(baseAttrInfo.getAttrName() + ": " + baseAttrValue.getValueName());
+        if(null!=baseAttrInfoList&&baseAttrInfoList.size()>0) {
+            for (Iterator<BaseAttrInfo> attrInfoIterator = baseAttrInfoList.iterator(); attrInfoIterator.hasNext(); ) {
+                BaseAttrInfo baseAttrInfo = attrInfoIterator.next();
+                List<BaseAttrValue> attrValueList = baseAttrInfo.getAttrValueList();
+                for (BaseAttrValue baseAttrValue : attrValueList) {
+                    if (null != skuLsParams.getValueId() && skuLsParams.getValueId().length > 0) {
+                        for (String valueId : skuLsParams.getValueId()) {
+                            if (valueId.equals(baseAttrValue.getId())) {
+                                attrInfoIterator.remove();
+                                BaseAttrValue baseAttrValueed = new BaseAttrValue();
+                                baseAttrValueed.setValueName(baseAttrInfo.getAttrName() + ": " + baseAttrValue.getValueName());
 
-                            String newUrlParam = makeUrlParam(skuLsParams, valueId);
-                            baseAttrValueed.setUrlParam(newUrlParam);
-                            baseAttrValueArrayList.add(baseAttrValueed);
+                                String newUrlParam = makeUrlParam(skuLsParams, valueId);
+                                baseAttrValueed.setUrlParam(newUrlParam);
+                                baseAttrValueArrayList.add(baseAttrValueed);
+                            }
                         }
                     }
                 }
