@@ -7,6 +7,7 @@ import com.hui.gmall.config.RedisUtil;
 import com.hui.gmall.manage.constant.ManageConst;
 import com.hui.gmall.manage.mapper.*;
 import com.hui.gmall.service.ManageService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -307,6 +308,13 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public List<SkuSaleAttrValue> getSkuSaleAttrValueListBySpu(String spuId) {
         return skuSaleAttrValueMapper.selectSkuSaleAttrValueListBySpu(spuId);
+    }
+
+    @Override
+    public List<BaseAttrInfo> getAttrList(List<String> attrValueIdList) {
+        if(null!=attrValueIdList&&attrValueIdList.size()>0)
+        return baseAttrInfoMapper.selectAttrInfoListByIds(StringUtils.join(attrValueIdList.toArray(), ","));
+        else return null;
     }
 
 }
