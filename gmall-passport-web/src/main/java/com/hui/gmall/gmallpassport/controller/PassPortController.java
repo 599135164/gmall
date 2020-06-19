@@ -51,6 +51,7 @@ public class PassPortController {
     }
 
     @RequestMapping("verify")
+    @ResponseBody
     public String verify(HttpServletRequest request) {
         //String salt = request.getHeader("X-forwarded-for");
         String token = request.getParameter("token");

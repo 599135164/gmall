@@ -1,0 +1,4 @@
+com\hui\gmall\interceptor\AuthInterceptor.class
+com\hui\gmall\util\WebConst.class
+com\hui\gmall\util\CookieUtil.class
+com\hui\gmall\conf\WebMvcConfiguration.class
