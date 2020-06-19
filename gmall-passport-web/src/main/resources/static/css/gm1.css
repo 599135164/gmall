@@ -56,7 +56,7 @@ header {
       color: black; }
 
 .top-3 {
-  width: 1365px;
+  width: 100%;
   background: #E93854;
   position: relative; }
   .top-3 .img_1 {
@@ -69,7 +69,7 @@ header {
     background: #fff;
     position: absolute;
     top: 28px;
-    left: 800px;
+    left: 1180px;
     z-index: 11; }
     .top-3 #sign .si_top {
       width: 100%;

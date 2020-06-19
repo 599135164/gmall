@@ -24,4 +24,10 @@ public interface UserService {
      */
     List<UserAddress> getUserAddressList(String userId);
 
+    /**
+     * 登录接口
+     * @param userInfo
+     * @return
+     */
+    UserInfo login(UserInfo userInfo);
 }

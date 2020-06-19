@@ -1,5 +1,7 @@
 package com.hui.gmall.bean;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +13,7 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2020/6/6 23:17
  */
+@Data
 public class UserInfo implements Serializable {
     @Id
     @Column
