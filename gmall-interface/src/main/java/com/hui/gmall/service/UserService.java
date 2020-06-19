@@ -30,4 +30,11 @@ public interface UserService {
      * @return
      */
     UserInfo login(UserInfo userInfo);
+
+    /**
+     * 根据用户 id 验证登录
+     * @param userId
+     * @return
+     */
+    UserInfo verify(String userId);
 }

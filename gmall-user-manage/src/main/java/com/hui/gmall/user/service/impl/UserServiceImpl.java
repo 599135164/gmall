@@ -10,6 +10,7 @@ import com.hui.gmall.user.mapper.UserAddressMapper;
 import com.hui.gmall.user.mapper.UserInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
 
 
@@ -72,5 +73,21 @@ public class UserServiceImpl implements UserService {
             }
         }
         return info;
+    }
+
+    @Override
+    public UserInfo verify(String userId) {
+        Jedis jedis =null;
+        try {
+            jedis = redisUtil.getJedis();
+            String key=userKey_prefix+userId+userinfoKey_suffix;
+            String userJson = jedis.get(key);
+            if (!StringUtils.isEmpty(userJson)) return JSON.parseObject(userJson, UserInfo.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (null != jedis) jedis.close();
+        }
+        return null;
     }
 }

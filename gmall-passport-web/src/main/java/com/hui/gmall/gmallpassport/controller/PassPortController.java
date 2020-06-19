@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author shenhui
@@ -42,9 +43,23 @@ public class PassPortController {
             if (null != info) {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("userId", info.getId());
-                map.put("nickName", userInfo.getNickName());
+                map.put("nickName", info.getNickName());
                 return JwtUtil.encode(key, map, request.getHeader("X-forwarded-for"));
             }
+        }
+        return "fail";
+    }
+
+    @RequestMapping("verify")
+    public String verify(HttpServletRequest request) {
+        //String salt = request.getHeader("X-forwarded-for");
+        String token = request.getParameter("token");
+        String salt = request.getParameter("salt");
+        Map<String, Object> map = JwtUtil.decode(token, key, salt);
+        if (null != map && map.size() > 0) {
+            String userId = (String) map.get("userId");
+            UserInfo userInfo = userService.verify(userId);
+            if (null != userInfo) return "success";
         }
         return "fail";
     }
