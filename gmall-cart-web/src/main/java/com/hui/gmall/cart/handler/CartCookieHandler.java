@@ -47,24 +47,24 @@ public class CartCookieHandler {
         //没有则直接添加
         //从cookie中取出购物车数据
         String cartJson = CookieUtil.getCookieValue(request, cookieCartName, true);
-        List<CartInfo> cartInfoList=new ArrayList<>();
-        boolean ifExist=false;
+        List<CartInfo> cartInfoList = new ArrayList<>();
+        boolean ifExist = false;
         if (StringUtils.isNotEmpty(cartJson)) {
             cartInfoList = JSON.parseArray(cartJson, CartInfo.class);
             for (CartInfo cartInfo : cartInfoList) {
                 //存在商品
-                if (cartInfo.getCartPrice().equals(skuId)){
-                    cartInfo.setSkuNum(cartInfo.getSkuNum()+skuNum);
-                    cartInfo.setCartPrice(cartInfo.getCartPrice());
-                    ifExist=true;
+                if (cartInfo.getSkuId().equals(skuId)) {
+                    cartInfo.setSkuNum(cartInfo.getSkuNum() + skuNum);
+                    cartInfo.setSkuPrice(cartInfo.getCartPrice());
+                    ifExist = true;
                     break;
                 }
             }
         }
-        if (!ifExist){
+        if (!ifExist) {
             //把商品信息取出来，新增到购物车
             SkuInfo skuInfo = manageService.getSkuInfo(skuId);
-            CartInfo cartInfo=new CartInfo();
+            CartInfo cartInfo = new CartInfo();
 
             cartInfo.setSkuId(skuId);
             cartInfo.setCartPrice(skuInfo.getPrice());
@@ -76,6 +76,17 @@ public class CartCookieHandler {
             cartInfo.setSkuNum(skuNum);
             cartInfoList.add(cartInfo);
         }
-        CookieUtil.setCookie(request,response,cookieCartName,JSON.toJSONString(cartInfoList),COOKIE_CART_MAXAGE,true);
+        CookieUtil.setCookie(request, response, cookieCartName, JSON.toJSONString(cartInfoList), COOKIE_CART_MAXAGE, true);
+    }
+
+    public List<CartInfo> getCartList(HttpServletRequest request) {
+        String cookieValue = CookieUtil.getCookieValue(request, cookieCartName, true);
+        if (StringUtils.isNotEmpty(cookieValue))
+        return JSON.parseArray(cookieValue, CartInfo.class);
+        return null;
+    }
+
+    public void deleteCartCookie(HttpServletRequest request, HttpServletResponse response) {
+        CookieUtil.deleteCookie(request,response,cookieCartName);
     }
 }

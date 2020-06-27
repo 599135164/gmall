@@ -13,6 +13,8 @@ import com.hui.gmall.service.ManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
+import java.util.*;
+
 /**
  * @author shenhui
  * @version 1.0
@@ -73,5 +75,76 @@ public class CartServiceImpl implements CartService {
         } finally {
             if (null != jedis) jedis.close();
         }
+    }
+
+    @Override
+    public List<CartInfo> getCartList(String userId) {
+        Jedis jedis = null;
+        try {
+            jedis = redisUtil.getJedis();
+            String userCaryKey = CartConst.USER_KEY_PREFIX + userId + CartConst.USER_CART_KEY_SUFFIX;
+            List<String> cartJsons = jedis.hvals(userCaryKey);
+            if (null != cartJsons && cartJsons.size() > 0) {
+                List<CartInfo> cartInfoList = new ArrayList<>();
+                for (String cartJson : cartJsons) {
+                    CartInfo cartInfo = JSON.parseObject(cartJson, CartInfo.class);
+                    cartInfoList.add(cartInfo);
+                }
+                //排序
+                cartInfoList.sort((o1, o2) -> Long.compare(Long.parseLong(o2.getId()), Long.parseLong(o1.getId())));
+                return cartInfoList;
+            } else return loadCartCache(userId, jedis); //从数据库中读取数据并添加到缓存
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (null != jedis) jedis.close();
+        }
+        return null;
+    }
+
+    @Override
+    public List<CartInfo> mergeToCartList(List<CartInfo> cartListCK, String userId) {
+        List<CartInfo> cartInfoListDB = cartInfoMapper.selectCartListWithCurPrice(userId);
+//        思路：用数据库中的购物车列表与传递过来的cookie里的购物车列表循环匹配。
+//        能匹配上的数量相加
+//        匹配不上的插入到数据库中。
+//        最后重新加载缓存
+        for (CartInfo cartInfoCK : cartListCK) {
+            boolean isMatch =false;
+            for (CartInfo cartInfoDB : cartInfoListDB) {
+                if (cartInfoCK.getSkuId().equals(cartInfoDB.getSkuId())) {
+                    cartInfoDB.setSkuNum(cartInfoCK.getSkuNum()+cartInfoDB.getSkuNum());
+                    cartInfoMapper.updateByPrimaryKeySelective(cartInfoDB);
+                    isMatch = true;
+                }
+            }
+            //没有匹配上
+            if (!isMatch){
+                //添加至数据库
+                cartInfoCK.setUserId(userId);
+                cartInfoMapper.insertSelective(cartInfoCK);
+            }
+        }
+        Jedis jedis=null;
+        List<CartInfo> cartInfoList=null;
+        try {
+            jedis=redisUtil.getJedis();
+            cartInfoList = loadCartCache(userId, jedis);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (null!=jedis) jedis.close();
+        }
+        return cartInfoList;
+    }
+
+    private List<CartInfo> loadCartCache(String userId, Jedis Jedis) {
+        List<CartInfo> cartInfoList = cartInfoMapper.selectCartListWithCurPrice(userId);
+        if (null == cartInfoList || cartInfoList.size() == 0) return null;
+        String userCaryKey = CartConst.USER_KEY_PREFIX + userId + CartConst.USER_CART_KEY_SUFFIX;
+        HashMap<String, String> map = new HashMap<>(cartInfoList.size());
+        for (CartInfo cartInfo : cartInfoList) map.put(cartInfo.getSkuId(), JSON.toJSONString(cartInfo));
+        Jedis.hmset(userCaryKey, map);
+        return cartInfoList;
     }
 }

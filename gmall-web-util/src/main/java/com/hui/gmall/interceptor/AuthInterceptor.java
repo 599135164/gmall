@@ -30,7 +30,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object handler) throws Exception {
         Map map = null;
-        //获取token
+        //从newToken中获取token
         String token = httpServletRequest.getParameter("newToken");
         //将 token 放入 cookie 中
         if (null != token)
