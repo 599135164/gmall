@@ -32,7 +32,7 @@ public class ItemController {
     private ListService listService;
 
     @RequestMapping("{skuId}.html")
-    @LoginRequire
+    //@LoginRequire
     public String skuInfoPage(@PathVariable(value = "skuId") String skuId, HttpServletRequest request) {
         //根据skuId获取数据
         SkuInfo skuInfo = manageService.getSkuInfo(skuId);

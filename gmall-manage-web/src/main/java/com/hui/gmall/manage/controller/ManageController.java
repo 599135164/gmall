@@ -2,6 +2,7 @@ package com.hui.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.hui.gmall.bean.*;
+import com.hui.gmall.conf.LoginRequire;
 import com.hui.gmall.service.ManageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;

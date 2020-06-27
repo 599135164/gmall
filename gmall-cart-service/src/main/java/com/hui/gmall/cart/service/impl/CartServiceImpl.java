@@ -1,0 +1,77 @@
+package com.hui.gmall.cart.service.impl;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
+import com.hui.gmall.bean.CartInfo;
+import com.hui.gmall.bean.SkuInfo;
+import com.hui.gmall.cart.constant.CartConst;
+import com.hui.gmall.cart.mapper.CartInfoMapper;
+import com.hui.gmall.config.RedisUtil;
+import com.hui.gmall.service.CartService;
+import com.hui.gmall.service.ManageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import redis.clients.jedis.Jedis;
+
+/**
+ * @author shenhui
+ * @version 1.0
+ * @date 2020/6/21 0:29
+ */
+@Service
+public class CartServiceImpl implements CartService {
+    @Autowired
+    private CartInfoMapper cartInfoMapper;
+
+    @Reference
+    private ManageService manageService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+
+    @Override
+    public void addToCart(String skuId, String userId, Integer skuNum) {
+        //判断购物车中是否曾经已经添加了这个商品，如果添加过了就相加
+        //查询购物车中是否有重复商品
+        CartInfo cartInfo = new CartInfo();
+        cartInfo.setUserId(userId);
+        cartInfo.setSkuId(skuId);
+        CartInfo cartInfoExist = cartInfoMapper.selectOne(cartInfo);
+        if (null != cartInfoExist) {
+            //更新数量和价格
+            cartInfoExist.setSkuNum(cartInfoExist.getSkuNum() + skuNum);
+            cartInfoExist.setSkuPrice(cartInfoExist.getCartPrice());
+            cartInfoMapper.updateByPrimaryKeySelective(cartInfoExist);
+        } else {
+            //insert
+            SkuInfo skuInfo = manageService.getSkuInfo(skuId);
+            CartInfo cartInfo1 = new CartInfo();
+            cartInfo1.setSkuId(skuId);
+            cartInfo1.setCartPrice(skuInfo.getPrice());
+            cartInfo1.setSkuPrice(skuInfo.getPrice());
+            cartInfo1.setSkuName(skuInfo.getSkuName());
+            cartInfo1.setImgUrl(skuInfo.getSkuDefaultImg());
+            cartInfo1.setUserId(userId);
+            cartInfo1.setSkuNum(skuNum);
+            cartInfoMapper.insertSelective(cartInfo1);
+            cartInfoExist = cartInfo1;
+        }
+        //缓存
+        Jedis jedis = null;
+        try {
+            jedis = redisUtil.getJedis();
+            //定义key
+            String userCaryKey = CartConst.USER_KEY_PREFIX + userId + CartConst.USER_CART_KEY_SUFFIX;
+            jedis.hset(userCaryKey, skuId, JSON.toJSONString(cartInfoExist));
+            String userInfoKey = CartConst.USER_KEY_PREFIX + userId + CartConst.USERINFOKEY_SUFFIX;
+            //取用户登录的过期时间
+            Long ttl = jedis.ttl(userInfoKey);
+            jedis.expire(userCaryKey, ttl.intValue());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (null != jedis) jedis.close();
+        }
+    }
+}

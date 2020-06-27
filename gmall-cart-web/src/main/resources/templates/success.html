@@ -18,7 +18,7 @@
         <div class="hd_wrap_top">
         <ul class="hd_wrap_left">
         <li class="hd_home"><i class="glyphicon glyphicon-home"></i>
-        <a href="./javascript:;">京东首页</a>
+        <a href="http://www.gmall.com">谷粒商城首页</a>
         </li>
 
         </ul>
@@ -34,8 +34,6 @@
         <a href="./javascript:;">我的订单</a>
         </li>
 
-
-
         </ul>
 
         </div>
@@ -46,14 +44,9 @@
 
         <div class="nav_top">
         <div class="nav_top_one">
-        <a href="./#"><img src="./img/logo1.jpg"  style="height: 60px;width:180px;"  /></a>
+        <a href="http://www.gmall.com"><img src="./img/logo1.jpg"  style="height: 60px;width:180px;"  /></a>
         </div>
         <div class="nav_top_two"><input type="text" /><button>搜索</button></div>
-
-
-
-
-
     </div>
 
     </div>
@@ -70,13 +63,13 @@
         <h3 class="ftx-02">商品已成功加入购物车</h3></div>
     <div class="p-item">
         <div class="p-img">
-        <a href="./javascript:;" target="_blank"><img style="height: 60px;width:60px;"  src="./img/shop1.jpg"></a>
+        <a href="./javascript:;" target="_blank"><img style="height: 60px;width:60px;" th:src="${skuInfo.skuDefaultImg}"  src="./img/shop1.jpg"></a>
         </div>
         <div class="p-info">
         <div class="p-name">
-<!--        <a th:href="http://item.gmall.com/44.html"   >Apple iPhone 11 (A2223) 64GB 黑色 移动联通电信4G手机 双卡双待</a>-->
+        <a th:href="'http://item.gmall.com/'+${skuInfo.id}+'.html'"  th:text="${skuInfo.skuName}">Apple iPhone 11 (A2223) 64GB 黑色 移动联通电信4G手机 双卡双待</a>
     </div>
-    <div class="p-extra"> <span class="txt" >  数量：1</span></div>
+    <div class="p-extra"> <span class="txt" th:text="${skuNum}" >  数量：1</span></div>
     </div>
     <div class="clr"></div>
         </div>
@@ -87,7 +80,7 @@
         </div>
         <div class="clr"></div>
         <div class="bg_shop">
-<!--        <a class="btn-tobback" th:href="'http://item.gmall.com/'+${skuInfo.id}+'.html'">查看商品详情</a>-->
+        <a class="btn-tobback" th:href="'http://item.gmall.com/'+${skuInfo.id}+'.html'">查看商品详情</a>
         <a class="btn-addtocart"  href="http://cart.gmall.com/cartList" id="GotoShoppingCart"><b></b>去购物车结算</a>
    </div>
     </div>
