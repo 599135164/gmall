@@ -110,32 +110,67 @@ public class CartServiceImpl implements CartService {
 //        匹配不上的插入到数据库中。
 //        最后重新加载缓存
         for (CartInfo cartInfoCK : cartListCK) {
-            boolean isMatch =false;
+            boolean isMatch = false;
             for (CartInfo cartInfoDB : cartInfoListDB) {
                 if (cartInfoCK.getSkuId().equals(cartInfoDB.getSkuId())) {
-                    cartInfoDB.setSkuNum(cartInfoCK.getSkuNum()+cartInfoDB.getSkuNum());
+                    cartInfoDB.setSkuNum(cartInfoCK.getSkuNum() + cartInfoDB.getSkuNum());
                     cartInfoMapper.updateByPrimaryKeySelective(cartInfoDB);
                     isMatch = true;
                 }
             }
             //没有匹配上
-            if (!isMatch){
+            if (!isMatch) {
                 //添加至数据库
                 cartInfoCK.setUserId(userId);
                 cartInfoMapper.insertSelective(cartInfoCK);
             }
         }
-        Jedis jedis=null;
-        List<CartInfo> cartInfoList=null;
+        Jedis jedis = null;
+        List<CartInfo> cartInfoList = null;
         try {
-            jedis=redisUtil.getJedis();
+            jedis = redisUtil.getJedis();
             cartInfoList = loadCartCache(userId, jedis);
+            for (CartInfo cartInfo : cartInfoList) {
+                for (CartInfo info : cartListCK) {
+                    if (cartInfo.getSkuId().equals(info.getSkuId())) {
+                        // 只有被勾选的才会进行更改
+                        if (info.getIsChecked().equals("1")) {
+                            cartInfo.setIsChecked(info.getIsChecked());
+                            // 更新redis中的isChecked
+                            checkCart(cartInfo.getSkuId(), info.getIsChecked(), userId);
+                        }
+                    }
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (null!=jedis) jedis.close();
+            if (null != jedis) jedis.close();
         }
         return cartInfoList;
+    }
+
+    @Override
+    public void checkCart(String skuId, String isChecked, String userId) {
+        String userCaryKey = CartConst.USER_KEY_PREFIX + userId + CartConst.USER_CART_KEY_SUFFIX;
+        Jedis jedis = null;
+        try {
+            jedis = redisUtil.getJedis();
+            //先获取购物车,然后修改
+            String cartJson = jedis.hget(userCaryKey, skuId);
+            CartInfo cartInfo = JSON.parseObject(cartJson, CartInfo.class);
+            cartInfo.setIsChecked(isChecked);
+            String jsonString = JSON.toJSONString(cartInfo);
+            jedis.hset(userCaryKey, skuId, jsonString);
+            String userCheckedKey = CartConst.USER_KEY_PREFIX + userId + CartConst.USER_CHECKED_KEY_SUFFIX;
+            //新建一个用于存储已勾选的商品购物车
+            if (isChecked.equals("1")) jedis.hset(userCheckedKey, skuId, jsonString);
+            else jedis.hdel(userCheckedKey, skuId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (null != jedis) jedis.close();
+        }
     }
 
     private List<CartInfo> loadCartCache(String userId, Jedis Jedis) {

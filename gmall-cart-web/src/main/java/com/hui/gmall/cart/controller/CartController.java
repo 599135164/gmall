@@ -11,6 +11,7 @@ import com.hui.gmall.util.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -65,5 +66,31 @@ public class CartController {
         } else cartList = cartCookieHandler.getCartList(request); //用户未登录
         request.setAttribute("cartList", cartList);
         return "cartList";
+    }
+
+    @RequestMapping("checkCart")
+    @LoginRequire(autoRedirect = false)  //无需登录鉴权
+    @ResponseBody
+    public void checkCart (HttpServletRequest request,HttpServletResponse response){
+        String isChecked = request.getParameter("isChecked");
+        String skuId = request.getParameter("skuId");
+        String userId = (String) request.getAttribute("userId");
+        if (userId!=null){
+            cartService.checkCart(skuId,isChecked,userId);
+        }else{
+            cartCookieHandler.checkCart(request,response,skuId,isChecked);
+        }
+    }
+
+    @RequestMapping("toTrade")
+    @LoginRequire(autoRedirect = true)
+    public String toTrade(HttpServletRequest request,HttpServletResponse response){
+        String userId = (String) request.getAttribute("userId");
+        List<CartInfo> cookieHandlerCartList = cartCookieHandler.getCartList(request);
+        if (cookieHandlerCartList!=null && cookieHandlerCartList.size()>0){
+            cartService.mergeToCartList(cookieHandlerCartList, userId);
+            cartCookieHandler.deleteCartCookie(request,response);
+        }
+        return "redirect://order.gmall.com/trade";
     }
 }

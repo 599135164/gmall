@@ -32,4 +32,12 @@ public interface CartService {
      * @return
      */
     List<CartInfo> mergeToCartList(List<CartInfo> cartListCK, String userId);
+
+    /**
+     * 登录状态下勾选购物车，修改redis isChecked
+     * @param skuId
+     * @param isChecked
+     * @param userId
+     */
+    void checkCart(String skuId, String isChecked, String userId);
 }

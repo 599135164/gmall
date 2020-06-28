@@ -20,15 +20,15 @@ import java.util.List;
 public class OrderController {
     @Reference
     private UserService userService;
-//    @RequestMapping("trade")
+
+    //    @RequestMapping("trade")
 //    public String trade(){
 //        //返回一个视图名称叫index，html
 //        return "index";
 //    }
     @RequestMapping("trade")
-    @ResponseBody
-    public List<UserAddress> trade(String userId) {
+    public String trade(String userId) {
         //返回一个视图名称叫index，html
-        return userService.getUserAddressList(userId);
+        return "trade";
     }
 }
