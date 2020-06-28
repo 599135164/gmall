@@ -50,7 +50,7 @@ public class CartController {
 
     @RequestMapping("cartList")
     @LoginRequire(autoRedirect = false)  //无需登录鉴权
-    public String cartList(HttpServletRequest request,HttpServletResponse response) {
+    public String cartList(HttpServletRequest request, HttpServletResponse response) {
         String userId = (String) request.getAttribute("userId");
         //查询购物车信息
         List<CartInfo> cartList = null;
@@ -61,7 +61,7 @@ public class CartController {
                 //合并购物车
                 cartList = cartService.mergeToCartList(cartListCK, userId);
                 //删除 cookie 中的购物车
-                cartCookieHandler.deleteCartCookie(request,response);
+                cartCookieHandler.deleteCartCookie(request, response);
             } else cartList = cartService.getCartList(userId);
         } else cartList = cartCookieHandler.getCartList(request); //用户未登录
         request.setAttribute("cartList", cartList);
@@ -71,26 +71,33 @@ public class CartController {
     @RequestMapping("checkCart")
     @LoginRequire(autoRedirect = false)  //无需登录鉴权
     @ResponseBody
-    public void checkCart (HttpServletRequest request,HttpServletResponse response){
+    public void checkCart(HttpServletRequest request, HttpServletResponse response) {
         String isChecked = request.getParameter("isChecked");
         String skuId = request.getParameter("skuId");
         String userId = (String) request.getAttribute("userId");
-        if (userId!=null){
-            cartService.checkCart(skuId,isChecked,userId);
-        }else{
-            cartCookieHandler.checkCart(request,response,skuId,isChecked);
+        if (userId != null) {
+            cartService.checkCart(skuId, isChecked, userId);
+        } else {
+            cartCookieHandler.checkCart(request, response, skuId, isChecked);
         }
     }
 
     @RequestMapping("toTrade")
     @LoginRequire(autoRedirect = true)
-    public String toTrade(HttpServletRequest request,HttpServletResponse response){
+    public String toTrade(HttpServletRequest request, HttpServletResponse response) {
         String userId = (String) request.getAttribute("userId");
         List<CartInfo> cookieHandlerCartList = cartCookieHandler.getCartList(request);
-        if (cookieHandlerCartList!=null && cookieHandlerCartList.size()>0){
+        if (cookieHandlerCartList != null && cookieHandlerCartList.size() > 0) {
             cartService.mergeToCartList(cookieHandlerCartList, userId);
-            cartCookieHandler.deleteCartCookie(request,response);
+            cartCookieHandler.deleteCartCookie(request, response);
         }
         return "redirect://order.gmall.com/trade";
+    }
+
+    @RequestMapping("submitOrder")
+    @LoginRequire(autoRedirect = true)
+    public String submitOrder(HttpServletRequest request) {
+        String userId = (String) request.getAttribute("userId");
+        return "redirect://payment.gmall.com/index?orderId=" + orderId;
     }
 }
