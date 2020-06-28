@@ -40,4 +40,11 @@ public interface CartService {
      * @param userId
      */
     void checkCart(String skuId, String isChecked, String userId);
+
+    /**
+     * 查询 redis 中勾选的购物车
+     * @param userId
+     * @return
+     */
+    List<CartInfo> getCartCheckedList(String userId);
 }

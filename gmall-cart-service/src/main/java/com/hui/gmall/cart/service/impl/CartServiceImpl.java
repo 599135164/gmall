@@ -173,6 +173,29 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    @Override
+    public List<CartInfo> getCartCheckedList(String userId) {
+        //定义key
+        String userCheckedKey = CartConst.USER_KEY_PREFIX + userId + CartConst.USER_CHECKED_KEY_SUFFIX;
+        Jedis jedis = null;
+        List<CartInfo> cartInfoList = new ArrayList<>();
+        try {
+            jedis = redisUtil.getJedis();
+            List<String> cartCheckedList = jedis.hvals(userCheckedKey);
+            if (null != cartCheckedList && cartCheckedList.size() > 0) {
+                for (String cartInfoJson : cartCheckedList) {
+                    CartInfo cartInfo = JSON.parseObject(cartInfoJson, CartInfo.class);
+                    cartInfoList.add(cartInfo);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (null != jedis) jedis.close();
+        }
+        return cartInfoList;
+    }
+
     private List<CartInfo> loadCartCache(String userId, Jedis Jedis) {
         List<CartInfo> cartInfoList = cartInfoMapper.selectCartListWithCurPrice(userId);
         if (null == cartInfoList || cartInfoList.size() == 0) return null;
