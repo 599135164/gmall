@@ -35,4 +35,12 @@ public interface OrderService {
      * @param userId
      */
     void  delTradeCode(String userId);
+
+    /**
+     * 核验库存是否充足
+     * @param skuId
+     * @param skuNum
+     * @return
+     */
+    boolean checkStock(String skuId, Integer skuNum);
 }

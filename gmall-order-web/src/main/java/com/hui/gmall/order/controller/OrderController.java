@@ -77,6 +77,14 @@ public class OrderController {
         }
         //验证之后删除流水号
         orderService.delTradeCode(orderInfo.getUserId());
+        //下订单之前还需要验证库存是否充足
+        for (OrderDetail orderDetail : orderInfo.getOrderDetailList()) {
+            if (!orderService.checkStock(orderDetail.getSkuId(), orderDetail.getSkuNum())) {
+                //库存不足
+                request.setAttribute("errMsg", "购物车中"+orderDetail.getSkuName()+"商品库存不足，请联系商家！");
+                return "tradeFail";
+            }
+        }
         String orderId = orderService.saveOrder(orderInfo);
         return "redirect://payment.gmall.com/index?orderId=" + orderId;
     }

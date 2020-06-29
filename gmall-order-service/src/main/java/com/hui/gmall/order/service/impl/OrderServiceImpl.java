@@ -9,6 +9,7 @@ import com.hui.gmall.config.RedisUtil;
 import com.hui.gmall.order.mapper.OrderDetailMapper;
 import com.hui.gmall.order.mapper.OrderInfoMapper;
 import com.hui.gmall.service.OrderService;
+import com.hui.gmall.util.HttpClientUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
@@ -102,5 +103,12 @@ public class OrderServiceImpl implements OrderService {
         } finally {
             if (null != jedis) jedis.close();
         }
+    }
+
+    @Override
+    public boolean checkStock(String skuId, Integer skuNum) {
+        //远程调用接口
+        String result = HttpClientUtil.doGet("http://www.gware.com/hasStock?skuId=" + skuId + "&num=" + skuNum);
+        return "1".equals(result);
     }
 }
