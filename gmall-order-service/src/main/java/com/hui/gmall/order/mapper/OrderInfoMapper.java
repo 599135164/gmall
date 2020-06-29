@@ -1,4 +1,4 @@
-package com.hui.gmall.cart.mapper;
+package com.hui.gmall.order.mapper;
 
 import com.hui.gmall.bean.OrderInfo;
 import tk.mybatis.mapper.common.Mapper;

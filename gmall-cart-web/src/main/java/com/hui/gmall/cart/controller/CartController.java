@@ -2,11 +2,13 @@ package com.hui.gmall.cart.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.hui.gmall.bean.CartInfo;
+import com.hui.gmall.bean.OrderInfo;
 import com.hui.gmall.bean.SkuInfo;
 import com.hui.gmall.cart.handler.CartCookieHandler;
 import com.hui.gmall.conf.LoginRequire;
 import com.hui.gmall.service.CartService;
 import com.hui.gmall.service.ManageService;
+import com.hui.gmall.service.OrderService;
 import com.hui.gmall.util.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,6 +31,7 @@ public class CartController {
     private CartService cartService;
     @Reference
     private ManageService manageService;
+
 
     @Autowired
     private CartCookieHandler cartCookieHandler;
@@ -94,10 +97,5 @@ public class CartController {
         return "redirect://order.gmall.com/trade";
     }
 
-    @RequestMapping("submitOrder")
-    @LoginRequire(autoRedirect = true)
-    public String submitOrder(HttpServletRequest request) {
-        String userId = (String) request.getAttribute("userId");
-        return "redirect://payment.gmall.com/index?orderId=" + orderId;
-    }
+
 }

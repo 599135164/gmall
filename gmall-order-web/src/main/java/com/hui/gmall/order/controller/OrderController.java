@@ -7,6 +7,7 @@ import com.hui.gmall.bean.OrderInfo;
 import com.hui.gmall.bean.UserAddress;
 import com.hui.gmall.conf.LoginRequire;
 import com.hui.gmall.service.CartService;
+import com.hui.gmall.service.OrderService;
 import com.hui.gmall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,8 @@ public class OrderController {
     private UserService userService;
     @Reference
     private CartService cartService;
+    @Reference
+    private OrderService orderService;
 
 
     @RequestMapping("trade")
@@ -39,9 +42,9 @@ public class OrderController {
         request.setAttribute("userAddressList", userAddressList);
         //展示送货清单，数据来源：勾选购物车
         List<CartInfo> cartInfoList = cartService.getCartCheckedList(userId);
-        List<OrderDetail> orderDetailList=new ArrayList<>();
+        List<OrderDetail> orderDetailList = new ArrayList<>();
         for (CartInfo cartInfo : cartInfoList) {
-            OrderDetail orderDetail=new OrderDetail();
+            OrderDetail orderDetail = new OrderDetail();
             orderDetail.setSkuId(cartInfo.getSkuId());
             orderDetail.setSkuName(cartInfo.getSkuName());
             orderDetail.setImgUrl(cartInfo.getImgUrl());
@@ -49,12 +52,32 @@ public class OrderController {
             orderDetail.setOrderPrice(cartInfo.getCartPrice());
             orderDetailList.add(orderDetail);
         }
-        request.setAttribute("orderDetailList",orderDetailList);
+        request.setAttribute("orderDetailList", orderDetailList);
         //总金额
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setOrderDetailList(orderDetailList);
         orderInfo.sumTotalAmount();
-        request.setAttribute("totalAmount",orderInfo.getTotalAmount());
+        request.setAttribute("totalAmount", orderInfo.getTotalAmount());
+        //保存流水号至页面
+        String tradeNo = orderService.getTradeNo(userId);
+        request.setAttribute("tradeNo", tradeNo);
         return "trade";
+    }
+
+    @RequestMapping("submitOrder")
+    @LoginRequire(autoRedirect = true)
+    public String submitOrder(HttpServletRequest request, OrderInfo orderInfo) {
+        orderInfo.setUserId((String) request.getAttribute("userId"));
+        //在保存订单信息之前先判断是否表单重复提交
+        boolean result = orderService.checkTradeCode(orderInfo.getUserId(), request.getParameter("tradeNo"));
+        if (!result) {
+            //重复提交
+            request.setAttribute("errMsg", "订单已提交，不能重复提交！");
+            return "tradeFail";
+        }
+        //验证之后删除流水号
+        orderService.delTradeCode(orderInfo.getUserId());
+        String orderId = orderService.saveOrder(orderInfo);
+        return "redirect://payment.gmall.com/index?orderId=" + orderId;
     }
 }
