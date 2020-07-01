@@ -43,4 +43,11 @@ public interface OrderService {
      * @return
      */
     boolean checkStock(String skuId, Integer skuNum);
+
+    /**
+     * 根据 订单id 来获取订单信息
+     * @param orderId
+     * @return
+     */
+    OrderInfo getOrderInfoById(String orderId);
 }

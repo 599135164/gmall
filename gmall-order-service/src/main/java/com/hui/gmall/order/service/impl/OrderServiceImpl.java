@@ -111,4 +111,9 @@ public class OrderServiceImpl implements OrderService {
         String result = HttpClientUtil.doGet("http://www.gware.com/hasStock?skuId=" + skuId + "&num=" + skuNum);
         return "1".equals(result);
     }
+
+    @Override
+    public OrderInfo getOrderInfoById(String orderId) {
+        return orderInfoMapper.selectByPrimaryKey(orderId);
+    }
 }

@@ -1,12 +1,10 @@
 package com.hui.gmall.order.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.hui.gmall.bean.CartInfo;
-import com.hui.gmall.bean.OrderDetail;
-import com.hui.gmall.bean.OrderInfo;
-import com.hui.gmall.bean.UserAddress;
+import com.hui.gmall.bean.*;
 import com.hui.gmall.conf.LoginRequire;
 import com.hui.gmall.service.CartService;
+import com.hui.gmall.service.ManageService;
 import com.hui.gmall.service.OrderService;
 import com.hui.gmall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +31,8 @@ public class OrderController {
     private CartService cartService;
     @Reference
     private OrderService orderService;
+    @Reference
+    private ManageService manageService;
 
 
     @RequestMapping("trade")
@@ -81,10 +82,11 @@ public class OrderController {
         for (OrderDetail orderDetail : orderInfo.getOrderDetailList()) {
             if (!orderService.checkStock(orderDetail.getSkuId(), orderDetail.getSkuNum())) {
                 //库存不足
-                request.setAttribute("errMsg", "购物车中"+orderDetail.getSkuName()+"商品库存不足，请联系商家！");
+                request.setAttribute("errMsg", "购物车中" + orderDetail.getSkuName() + "商品库存不足，请联系商家！");
                 return "tradeFail";
             }
         }
+        //验证价格
         String orderId = orderService.saveOrder(orderInfo);
         return "redirect://payment.gmall.com/index?orderId=" + orderId;
     }
