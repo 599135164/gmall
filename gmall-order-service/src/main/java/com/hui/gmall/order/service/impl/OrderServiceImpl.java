@@ -1,23 +1,25 @@
 package com.hui.gmall.order.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.hui.gmall.bean.OrderDetail;
 import com.hui.gmall.bean.OrderInfo;
 import com.hui.gmall.bean.enmus.OrderStatus;
 import com.hui.gmall.bean.enmus.ProcessStatus;
+import com.hui.gmall.config.ActiveMQUtil;
 import com.hui.gmall.config.RedisUtil;
 import com.hui.gmall.order.mapper.OrderDetailMapper;
 import com.hui.gmall.order.mapper.OrderInfoMapper;
 import com.hui.gmall.service.OrderService;
 import com.hui.gmall.util.HttpClientUtil;
+import org.apache.activemq.command.ActiveMQTextMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
-import java.util.UUID;
+import javax.jms.*;
+import javax.jms.Queue;
+import java.util.*;
 
 /**
  * @author shenhui
@@ -32,6 +34,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetailMapper orderDetailMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private ActiveMQUtil activeMQUtil;
 
     @Override
     @Transactional
@@ -114,6 +118,80 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderInfo getOrderInfoById(String orderId) {
-        return orderInfoMapper.selectByPrimaryKey(orderId);
+        OrderInfo orderInfo = orderInfoMapper.selectByPrimaryKey(orderId);
+
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setOrderId(orderId);
+        List<OrderDetail> orderDetailList = orderDetailMapper.select(orderDetail);
+
+        orderInfo.setOrderDetailList(orderDetailList);
+        return orderInfo;
+
     }
+
+    @Override
+    public void updateOrderStatus(String orderId, ProcessStatus processStatus) {
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setId(orderId);
+        orderInfo.setProcessStatus(processStatus);
+        orderInfo.setOrderStatus(processStatus.getOrderStatus());
+        orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+
+    }
+
+    public void sendOrderStatus(String orderId) {
+        Connection connection = activeMQUtil.getConnection();
+        String orderJson = initWareOrder(orderId);
+        try {
+            connection.start();
+            Session session = connection.createSession(true, Session.SESSION_TRANSACTED);
+            Queue order_result_queue = session.createQueue("ORDER_RESULT_QUEUE");
+            MessageProducer producer = session.createProducer(order_result_queue);
+
+            ActiveMQTextMessage textMessage = new ActiveMQTextMessage();
+            textMessage.setText(orderJson);
+            producer.send(textMessage);
+            session.commit();
+            session.close();
+            producer.close();
+            connection.close();
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public String initWareOrder(String orderId) {
+        OrderInfo orderInfo = getOrderInfoById(orderId);
+        Map map = initWareOrder(orderInfo);
+        return JSON.toJSONString(map);
+    }
+
+    // 设置初始化仓库信息方法
+    public Map initWareOrder(OrderInfo orderInfo) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderId", orderInfo.getId());
+        map.put("consignee", orderInfo.getConsignee());
+        map.put("consigneeTel", orderInfo.getConsigneeTel());
+        map.put("orderComment", orderInfo.getOrderComment());
+        map.put("orderBody", "测试用例");
+        map.put("deliveryAddress", orderInfo.getDeliveryAddress());
+        map.put("paymentWay", "2");
+        map.put("wareId", orderInfo.getWareId());
+
+        // 组合json
+        List detailList = new ArrayList();
+        List<OrderDetail> orderDetailList = orderInfo.getOrderDetailList();
+        for (OrderDetail orderDetail : orderDetailList) {
+            Map detailMap = new HashMap();
+            detailMap.put("skuId", orderDetail.getSkuId());
+            detailMap.put("skuName", orderDetail.getSkuName());
+            detailMap.put("skuNum", orderDetail.getSkuNum());
+            detailList.add(detailMap);
+        }
+        map.put("details", detailList);
+        return map;
+    }
+
+
 }

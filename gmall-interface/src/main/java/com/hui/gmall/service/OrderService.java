@@ -1,6 +1,7 @@
 package com.hui.gmall.service;
 
 import com.hui.gmall.bean.OrderInfo;
+import com.hui.gmall.bean.enmus.ProcessStatus;
 
 /**
  * @author shenhui
@@ -50,4 +51,9 @@ public interface OrderService {
      * @return
      */
     OrderInfo getOrderInfoById(String orderId);
+
+    void updateOrderStatus(String orderId, ProcessStatus processStatus);
+
+    void sendOrderStatus(String orderId);
+
 }

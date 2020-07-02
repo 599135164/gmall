@@ -9,4 +9,14 @@ import com.hui.gmall.bean.PaymentInfo;
  */
 public interface PaymentService {
     void savePaymentInfo(PaymentInfo paymentInfo);
+
+    PaymentInfo getPaymentInfo(PaymentInfo paymentInfoQuery);
+
+    void updatePaymentInfo(String out_trade_no, PaymentInfo paymentInfo);
+
+    void sendPaymentResult(PaymentInfo paymentInfo, String result);
+
+    boolean checkPayment(PaymentInfo paymentInfoQuery);
+
+    void sendDelayPaymentResult(String outTradeNo,int delaySec ,int checkCount);
 }

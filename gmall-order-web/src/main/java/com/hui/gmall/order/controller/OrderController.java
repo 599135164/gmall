@@ -88,6 +88,7 @@ public class OrderController {
         }
         //验证价格
         String orderId = orderService.saveOrder(orderInfo);
+
         return "redirect://payment.gmall.com/index?orderId=" + orderId;
     }
 }
